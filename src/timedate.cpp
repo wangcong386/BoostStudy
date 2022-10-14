@@ -132,3 +132,46 @@ void TimeDate::DateDuration() {
   date2 += boost::gregorian::years(1);
   std::cout << date2 << std::endl;
 }
+
+void TimeDate::DatePeriod() {
+  // 构造方式1：起始日期+时间长度
+  boost::gregorian::date_period DatePeriod1(
+      boost::gregorian::day_clock::local_day(), boost::gregorian::days(7));
+  // 构造方式2：起始日期+终止日期
+  boost::gregorian::date_period DatePeriod2(boost::gregorian::date(2021, 4, 2),
+                                            boost::gregorian::date(2022, 4, 2));
+  // 构造方式1：起始日期晚于终止日期，无效
+  boost::gregorian::date_period DatePeriod3(boost::gregorian::date(2022, 4, 2),
+                                            boost::gregorian::date(2021, 4, 2));
+  // 构造方式2：时间长度为负数，无效
+  boost::gregorian::date_period DatePeriod4(
+      boost::gregorian::day_clock::local_day(), boost::gregorian::days(-8));
+
+  std::cout << "DatePeriod1 " << DatePeriod1 << std::endl;
+  std::cout << "DatePeriod2 " << DatePeriod2 << std::endl;
+  std::cout << "DatePeriod3 " << DatePeriod3 << std::endl;
+  std::cout << "DatePeriod4 " << DatePeriod4 << std::endl;
+
+  // begin/last返回日期区间两个端点
+  std::cout << "DatePeriod1 begin " << DatePeriod1.begin() << std::endl;
+  std::cout << "DatePeriod1 last " << DatePeriod1.last() << std::endl;
+  // is_null左大右小端点或日期长度为0
+  assert(DatePeriod3.is_null() == true);
+  // end返回last后的一天(逾尾的一天)
+  std::cout << "DatePeriod1 end " << DatePeriod1.end() << std::endl;
+  // length返回日期区间长度，单位是天
+  std::cout << "DatePeriod2 length " << DatePeriod2.length() << std::endl;
+  // 全序比较，比较第一区间end和第二区间begin，若有相交或包含则比较无意义
+  boost::gregorian::date_period DatePeriod5(boost::gregorian::date(2022, 4, 3),
+                                            boost::gregorian::date(2022, 4, 5)),
+      DatePeriod6(boost::gregorian::date(2022, 4, 4),
+                  boost::gregorian::date(2022, 4, 6));
+  //  assert(DatePeriod5 < DatePeriod6);  // 断言失败
+  // shift平移区间n天长度不变
+  std::cout << "DatePeriod5 before shift " << DatePeriod5 << std::endl;
+  DatePeriod5.shift(boost::gregorian::days(5));
+  std::cout << "DatePeriod5 after shift " << DatePeriod5 << std::endl;
+  // expand将日期区间向两端延伸n天，日期长度变为2n天
+  DatePeriod5.expand(boost::gregorian::days(2));
+  std::cout << "DatePeriod 5 after expand 2 days " << DatePeriod5 << std::endl;
+}

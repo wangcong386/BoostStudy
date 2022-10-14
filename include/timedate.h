@@ -19,6 +19,8 @@ class TimeDate {
   void DateOutput();
   void CTransform();
   void DateDuration();
+  // 日期区间
+  void DatePeriod();
 
  private:
   boost::timer m_BoostTimer;
