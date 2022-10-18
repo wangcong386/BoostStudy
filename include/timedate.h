@@ -21,6 +21,10 @@ class TimeDate {
   void DateDuration();
   // 日期区间
   void DatePeriod();
+  // 日期迭代器
+  void DateIterator();
+  // 其他功能
+  void OtherUse();
 
  private:
   boost::timer m_BoostTimer;

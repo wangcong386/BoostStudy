@@ -173,5 +173,78 @@ void TimeDate::DatePeriod() {
   std::cout << "DatePeriod5 after shift " << DatePeriod5 << std::endl;
   // expand将日期区间向两端延伸n天，日期长度变为2n天
   DatePeriod5.expand(boost::gregorian::days(2));
-  std::cout << "DatePeriod 5 after expand 2 days " << DatePeriod5 << std::endl;
+  std::cout << "DatePeriod5 after expand 2 days " << DatePeriod5 << std::endl;
+
+  // 日期区间是否在日期前/后
+  std::cout << "DatePeriod5 is after 2022/01/01 "
+            << DatePeriod5.is_after(boost::gregorian::date(2022, 1, 1))
+            << std::endl;
+  std::cout << "DatePeriod5 is before 2023/01/01 "
+            << DatePeriod5.is_before(boost::gregorian::date(2023, 01, 01))
+            << std::endl;
+  // 日期区间是否包含另一个日期或区间
+  std::cout << "DatePeriod5 contains 2022/03/04 "
+            << DatePeriod5.contains(boost::gregorian::date(2022, 03, 04))
+            << std::endl;
+  std::cout << "DatePeroid5 contains DatePeriod6 "
+            << DatePeriod5.contains(DatePeriod6) << std::endl;
+  // 两日期区间是否存在交集
+  std::cout << "DatePeriod5 intersects DatePeriod6 "
+            << DatePeriod5.intersects(DatePeriod6) << std::endl;
+  // 返回两日期区间交集
+  std::cout << "intersection between DatePeriod5 and DatePeriod6 "
+            << DatePeriod5.intersection(DatePeriod6) << std::endl;
+
+  // 两日期区间是否相邻
+  std::cout << "DatePeriod5 is adjacent with DatePeriod6 "
+            << DatePeriod5.is_adjacent(DatePeriod6) << std::endl;
+
+  // 两个日期区间的并集，若无交集或不相邻，返回无效区间，
+  // 打印出来的日期区间将是起始日期大于结束日期
+  std::cout << "DatePeriod5 merge with DatePeriod6 "
+            << DatePeriod5.merge(DatePeriod6).is_null() << std::endl;
+  std::cout << "DatePeriod1 merge with DatePeriod2 "
+            << DatePeriod1.merge(DatePeriod2).is_null() << std::endl;
+  // 合并两个日期区间以及之间的间隔，广义的merge
+  std::cout << "DatePeriod5 span with DatePeriod6 "
+            << DatePeriod5.span(DatePeriod6) << std::endl;
+}
+
+void TimeDate::DateIterator() {
+  boost::gregorian::date Date1(2022, 03, 20);
+  boost::gregorian::day_iterator it_day(Date1);
+  // 递增1天
+  std::cout << "Date1 = it_day " << (it_day == Date1) << std::endl;
+  ++it_day;
+  std::cout << "Date1 fater one day = it_day "
+            << (it_day == boost::gregorian::date(2022, 03, 21)) << std::endl;
+
+  // 递增步长为10年
+  boost::gregorian::year_iterator it_year(*it_day, 10);
+  std::cout << "it_year == Date1 + 1 day "
+            << (it_year == Date1 + boost::gregorian::days(1)) << std::endl;
+  // 递增10年
+  ++it_year;
+  std::cout << "it_year = Date1 + 1 day + 10 years "
+            << (it_year ==
+                Date1 + boost::gregorian::days(1) + boost::gregorian::years(10))
+            << std::endl;
+
+  // 迭代器并非标准，无法完成+=等方法调用，除非定义相关内部类
+  boost::gregorian::day_iterator it_day_other =
+      boost::gregorian::day_clock::local_day();
+  ++it_day_other;  // 正确
+  //  it_day_other += 2;    // 错误，无法编译
+  //  std::advance(it_day_other, 2);  // 错误，无法编译
+}
+
+void TimeDate::OtherUse() {
+  // 是否闰年
+  std::cout << "2017 is leap "
+            << boost::gregorian::gregorian_calendar::is_leap_year(2008)
+            << std::endl;
+  // 某月最后一天
+  std::cout << "last day of 2022/02 "
+            << boost::gregorian::gregorian_calendar::end_of_month_day(2022, 02)
+            << std::endl;
 }

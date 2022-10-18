@@ -27,7 +27,9 @@ int main(int argc, char *argv[]) {
   //  timeDate.DateOutput();
   //  timeDate.CTransform();
   //  timeDate.DateDuration();
-  timeDate.DatePeriod();
+  //  timeDate.DatePeriod();
+  //  timeDate.DateIterator();
+  timeDate.OtherUse();
   QApplication a(argc, argv);
   BoostTestWin w;
   w.show();
