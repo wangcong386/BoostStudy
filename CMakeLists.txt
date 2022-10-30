@@ -11,11 +11,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(HOME_PATH "/home/wangcong/")
-set(CMAKE_PREFIX_PATH ${HOME_PATH}Qt/6.3.1/)
+# find boost
 set(BOOST_ROOT "/user/local/include/boost")
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Boost REQUIRED COMPONENTS system)
 
 if(Boost_FOUND)
@@ -25,6 +22,18 @@ if(Boost_FOUND)
     message(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}")
 endif()
 
+# find qt
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+
+if(QT_FOUND)
+    message("QT_VERSION_MAJOR = ${QT_VERSION_MAJOR}")
+    message("QT_VERSION_MAJOR = ${QT_VERSION_MINOR}")
+    message("QT_VERSION_PATCH = ${QT_VERSION_PATCH}")
+    message("Qt${QT_VERSION_MAJOR}_DIR = ${Qt${QT_VERSION_MAJOR}_DIR}")
+endif(QT_FOUND)
+
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
 message("PROJECT_SOURCE_DIR" ${PROJECT_SOURCE_DIR})
 
 include_directories(
@@ -32,12 +41,12 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
 )
 set(PROJECT_SOURCES
-        ${PROJECT_SOURCE_DIR}/src/main.cpp
-        ${PROJECT_SOURCE_DIR}/src/boosttestwin.cpp
-        ${PROJECT_SOURCE_DIR}/src/timedate.cpp
-        ${PROJECT_SOURCE_DIR}/include/boosttestwin.h
-        ${PROJECT_SOURCE_DIR}/include/timedate.h
-        ${PROJECT_SOURCE_DIR}/src/boosttestwin.ui
+    ${PROJECT_SOURCE_DIR}/src/main.cpp
+    ${PROJECT_SOURCE_DIR}/src/boosttestwin.cpp
+    ${PROJECT_SOURCE_DIR}/src/timedate.cpp
+    ${PROJECT_SOURCE_DIR}/include/boosttestwin.h
+    ${PROJECT_SOURCE_DIR}/include/timedate.h
+    ${PROJECT_SOURCE_DIR}/src/boosttestwin.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -45,17 +54,19 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
+
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET BoostStudy APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
+# set_property(TARGET BoostStudy APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+# ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
         add_library(BoostStudy SHARED
             ${PROJECT_SOURCES}
         )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+
+    # Define properties for Android with Qt 5 after find_package() calls as:
+    # set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(BoostStudy
             ${PROJECT_SOURCES}
