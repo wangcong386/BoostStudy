@@ -12,8 +12,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # find boost
-set(BOOST_ROOT "/user/local/include/boost")
-find_package(Boost REQUIRED COMPONENTS system)
+if(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
+    set(BOOST_ROOT "/user/local/include/boost")
+elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
+    set(BOOST_ROOT C:/Boost)
+    set(Boost_LIBRARY_DIRS C:/Boost/lib)
+endif()
+
+find_package(Boost REQUIRED COMPONENTS)
 
 if(Boost_FOUND)
     message(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
@@ -23,7 +29,7 @@ if(Boost_FOUND)
 endif()
 
 # find qt
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS)
 
 if(QT_FOUND)
     message("QT_VERSION_MAJOR = ${QT_VERSION_MAJOR}")
