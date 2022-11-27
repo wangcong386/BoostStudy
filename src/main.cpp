@@ -29,7 +29,11 @@ int main(int argc, char *argv[]) {
   //  timeDate.DateDuration();
   //  timeDate.DatePeriod();
   //  timeDate.DateIterator();
-  timeDate.OtherUse();
+  //  timeDate.OtherUse();
+  //  timeDate.ShowMonth();
+  //  timeDate.SimpleDateCalc();
+  //  timeDate.CreditCardFreeDaysCalc();
+  timeDate.OperateTimeDuration();
   QApplication a(argc, argv);
   BoostTestWin w;
   w.show();

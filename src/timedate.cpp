@@ -248,3 +248,119 @@ void TimeDate::OtherUse() {
             << boost::gregorian::gregorian_calendar::end_of_month_day(2022, 02)
             << std::endl;
 }
+
+void TimeDate::ShowMonth() {
+  boost::gregorian::date d(2017, 1, 23);
+
+  // 当月第一天
+  boost::gregorian::date month_start(d.year(), d.month(), 1);
+  // 当月最后一天
+  boost::gregorian::date month_end = d.end_of_month();
+  // 构造日期迭代器
+  for (boost::gregorian::day_iterator d_iter(month_start); d_iter != month_end;
+       ++d_iter) {
+    // 输出日期和星期
+    std::cout << *d_iter << " " << d_iter->week_number() << std::endl;
+  }
+}
+
+void TimeDate::SimpleDateCalc() {
+  /** 计算一个人18岁生日是星期几，当月几个星期天，当年多少天
+   *  */
+  // 声明一个日期对象
+  boost::gregorian::date Date(2017, 1, 23);
+
+  // 18岁生日日期
+  boost::gregorian::date Date18YearOld = Date + boost::gregorian::years(18);
+  std::cout << "此人18岁生日是星期" << Date18YearOld.day_of_week() << std::endl;
+
+  // 星期天计数器
+  int nSundayCnt = 0;
+  // 迭代器统计星期天数量
+  // 当月第一天
+  boost::gregorian::date FirstDayOfMonth18YearsOld(Date18YearOld.year(),
+                                                   Date18YearOld.month(), 1);
+  for (boost::gregorian::day_iterator d_iter(FirstDayOfMonth18YearsOld);
+       d_iter != Date18YearOld.end_of_month(); ++d_iter) {
+    if (d_iter->day_of_week() == boost::gregorian::Sunday) {
+      ++nSundayCnt;
+    }
+  }
+  std::cout << "当月有" << nSundayCnt << "个星期天" << std::endl;
+
+  // 当年天数计数器
+  int nDayOfYearCnt = 0;
+  // 当年第一天
+  boost::gregorian::date FirstDayOfYear18YearsOld(Date18YearOld.year(), 1, 1);
+  boost::gregorian::date FirstDayOfYear19YearsOld(Date18YearOld.year() + 1, 1,
+                                                  1);
+  // 构造月迭代器，按月统计每月天数
+  for (boost::gregorian::month_iterator m_iter(FirstDayOfYear18YearsOld);
+       m_iter < FirstDayOfYear19YearsOld; ++m_iter) {
+    // 累加每月天数
+    nDayOfYearCnt += m_iter->end_of_month().day();
+  }
+  std::cout << "当年有" << nDayOfYearCnt << "天" << std::endl;
+  // 或者直接判断当年是否是闰年
+  std::cout << "当年有"
+            << (boost::gregorian::gregorian_calendar::is_leap_year(
+                    Date18YearOld.year())
+                    ? 366
+                    : 365)
+            << "天" << std::endl;
+}
+
+void TimeDate::CreditCardFreeDaysCalc() {
+  // 创建两个信用卡对象，比较免息期
+  CreditCard card1("A Bank", 25);
+  CreditCard card2("B Bank", 15);
+  CreditCard tmp = std::max(card1, card2);
+  std::cout << "应当使用信用卡" << tmp.m_sBankName << "它的免息期为"
+            << tmp.CalcFreeDays() << "天" << std::endl;
+}
+
+void TimeDate::OperateTimeDuration() {
+  // 构造函数指定时/分/秒/微秒
+  boost::posix_time::time_duration TD(1, 10, 10, 1000);
+
+  // 子类更直观创建时间长度
+  boost::posix_time::hours h(1);
+  boost::posix_time::minutes m(10);
+  boost::posix_time::seconds s(10);
+  boost::posix_time::millisec ms(1000);
+  boost::posix_time::time_duration TD1 = h + m + s + ms;
+
+  // 也可直接赋值
+  boost::posix_time::time_duration TD2 =
+      boost::posix_time::hours(10) + boost::posix_time::minutes(19);
+
+  // 使用工厂函数可以从字符串创建，冒号隔开
+  boost::posix_time::time_duration TD3 =
+      boost::posix_time::duration_from_string("1:10:30:001");
+
+  // 时/分/秒可以使用如下函数访问
+  boost::posix_time::time_duration TD4(1, 10, 30, 1000);
+  assert(TD4.hours() == 1 && TD4.minutes() == 10 && TD4.seconds() == 30);
+  // total_xx返回时间长度的总秒数/毫秒数/微秒数
+  assert(TD4.total_seconds() == 1 * 3600 + 10 * 60 + 30);
+  assert(TD4.total_milliseconds() == TD4.total_seconds() * 1000 + 1);
+  // fractional_seconds以long返回微秒数
+  assert(TD4.fractional_seconds() == 1000);
+
+  // 时间长度可以取负值
+  boost::posix_time::hours h1(-10);
+  assert(h1.is_negative());
+  boost::posix_time::time_duration TD5 = h1.invert_sign();
+  assert(!TD5.is_negative() && TD5.hours() == 10);
+
+  // 赋值特殊时间值
+  boost::posix_time::time_duration TD6(boost::posix_time::not_a_date_time);
+  assert(TD6.is_special() && TD6.is_not_a_date_time());
+  boost::posix_time::time_duration TD7(boost::posix_time::neg_infin);
+  assert(TD7.is_negative() && TD7.is_neg_infinity());
+
+  // 字符串表示
+  boost::posix_time::time_duration TD8(1, 10, 40, 100);
+  std::cout << boost::posix_time::to_simple_string(TD8) << std::endl;
+  std::cout << boost::posix_time::to_iso_string(TD8) << std::endl;
+}
