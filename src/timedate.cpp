@@ -364,3 +364,122 @@ void TimeDate::OperateTimeDuration() {
   std::cout << boost::posix_time::to_simple_string(TD8) << std::endl;
   std::cout << boost::posix_time::to_iso_string(TD8) << std::endl;
 }
+
+void TimeDate::TimePrecision() {
+  // 在引入头文件之前定义宏BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG，与未定义时进行比较
+  boost::posix_time::time_duration TD(1, 10, 30, 1000);
+  std::cout << TD << std::endl;
+  std::cout << TD.total_milliseconds() << std::endl;
+  std::cout << TD.total_seconds() << std::endl;
+  // fractional_seconds没有改变，此函数返回小数部分，定义宏时表示1000ns，未定义宏时表示us，单位不同但是值相同
+  assert(TD.fractional_seconds() == 1000);
+  assert(TD.total_milliseconds() == TD.total_seconds() * 1000);
+  // unit函数返回当前计时最小单位
+  std::cout << boost::posix_time::time_duration::unit() << std::endl;
+  // resolution返回枚举值，表示时间长度的分辨率(如果是ns分辨率断言成立)
+  assert(TD.resolution() == boost::date_time::nano);
+  // num_fractional_digits返回秒的小数部分的位数(如果是ns分辨率断言成立)
+  assert(TD.num_fractional_digits() == 9);
+  // ticks_per_second返回每秒钟内的tick数，可以编写与时间精度无关的代码
+  // 例如自定毫秒时间单位
+  boost::posix_time::time_duration::tick_type my_millisec =
+      boost::posix_time::time_duration::ticks_per_second() / 1000;
+  std::cout << my_millisec << std::endl;
+  boost::posix_time::time_duration TD1(1, 10, 30, 10 * my_millisec);
+  std::cout << TD1 << std::endl;
+}
+
+void TimeDate::TimePoint() {
+  // 创建ptime核心类方式是传入日期和24小时内的偏移量
+  boost::posix_time::ptime PT(boost::gregorian::date(2017, 7, 7),
+                              boost::posix_time::hours(1));
+  std::cout << PT << std::endl;
+  // ptime可以使用字符串构造
+  boost::posix_time::ptime PT1 =
+      boost::posix_time::time_from_string("2017-7-7 01:00:00");
+  boost::posix_time::ptime PT2 =
+      boost::posix_time::from_iso_string("20170707T010000");
+  // 从时钟产生当前时间
+  // 秒级分辨率
+  PT1 = boost::posix_time::second_clock::local_time();
+  std::cout << PT1 << std::endl;
+  PT1 = boost::posix_time::second_clock::universal_time();
+  std::cout << PT1 << std::endl;
+  // 微秒级分辨率
+  PT2 = boost::posix_time::microsec_clock::local_time();
+  std::cout << PT2 << std::endl;
+  PT2 = boost::posix_time::microsec_clock::universal_time();
+  std::cout << PT2 << std::endl;
+
+  // 构造特殊时间值
+  // 无效时间
+  boost::posix_time::ptime PT3(boost::posix_time::not_a_date_time);
+  assert(PT3.is_not_a_date_time());
+  // 正无限时间
+  boost::posix_time::ptime PT4(boost::posix_time::pos_infin);
+  assert(PT4.is_special() && PT4.is_pos_infinity());
+
+  // 操作时间点对象：分为date和time_of_day分别处理
+  boost::gregorian::date PTDate = PT.date();
+  boost::posix_time::time_duration PTTimeDuration = PT.time_of_day();
+  std::cout << PTDate << std::endl;
+  std::cout << PTTimeDuration << std::endl;
+
+  // 比较操作和加减运算
+  PT1 = PT + boost::posix_time::hours(3);
+  assert(PT < PT1 && PT1 - PT == boost::posix_time::hours(3));
+  PT1 += boost::gregorian::months(1);
+  assert(PT1.date().month() == 8);
+
+  // 转换为字符的接口
+  std::cout << boost::posix_time::to_simple_string(PT1) << std::endl;
+  std::cout << boost::posix_time::to_iso_string(PT1) << std::endl;
+  std::cout << boost::posix_time::to_iso_extended_string(PT1) << std::endl;
+
+  // C结构互转
+  tm t = boost::posix_time::to_tm(PT1);
+  std::cout << "year " << t.tm_year << " month " << t.tm_mon << " day "
+            << t.tm_mday << std::endl;
+  assert(boost::posix_time::ptime_from_tm(t) == PT1);
+
+  // 转换为time_t
+  PT1 = boost::posix_time::from_time_t(std::time(0));
+  assert(PT1.date() == boost::gregorian::day_clock::local_day());
+  std::cout << boost::posix_time::to_time_t(PT1) << std::endl;
+}
+
+void TimeDate::TimePeriod() {
+  // 使用ptime表示区间两端点，左闭右开
+
+  // 2022年元旦中午
+  boost::posix_time::ptime PT(boost::gregorian::date(2022, 1, 1),
+                              boost::posix_time::hours(12));
+  // 自PT时刻起8小时的时间区间
+  boost::posix_time::time_period TP1(PT, boost::posix_time::hours(8));
+  // TP1终点时刻起1小时时间区间
+  boost::posix_time::time_period TP2(PT + boost::posix_time::hours(8),
+                                     boost::posix_time::hours(1));
+  // 两区间相邻但不相交
+  assert(TP1.end() == TP2.begin() && TP1.is_adjacent(TP2));
+  // TP1平移一小时
+  TP1.shift(boost::posix_time::hours(1));
+  // TP1在PT之后
+  assert(TP1.is_after(PT));
+  // TP1和TP2相交
+  assert(TP1.intersects(TP2));
+
+  // TP2向两端扩展10小时
+  TP2.expand(boost::posix_time::hours(10));
+  assert(TP2.contains(PT) && TP2.contains(TP1));
+}
+
+void TimeDate::TimeIterator() {
+  // 构造时传入ptime时间点对象和一个time_duration步长对象，使用++或--递增或者递减时间，使用解引用操作符返回ptime对象
+  boost::posix_time::ptime PT(boost::gregorian::date(2022, 1, 1),
+                              boost::posix_time::hours(10));
+  for (boost::posix_time::time_iterator t_iter(PT,
+                                               boost::posix_time::minutes(10));
+       t_iter < PT + boost::posix_time::hours(1); ++t_iter) {
+    std::cout << *t_iter << std::endl;
+  }
+}

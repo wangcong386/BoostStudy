@@ -1,6 +1,7 @@
 #ifndef TIMEDATE_H
 #define TIMEDATE_H
 #undef BOOST_DATE_TIME_OPTIONAL_GREGORIAN_TYPES
+#define BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/progress.hpp>
@@ -65,6 +66,15 @@ class TimeDate {
 
   // 操作时间长度
   void OperateTimeDuration();
+  // 时间精确度
+  // 定义宏BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG时间分辨率将精确到纳秒
+  void TimePrecision();
+  // 时间点定义
+  void TimePoint();
+  // 时间区间
+  void TimePeriod();
+  // 时间迭代器
+  void TimeIterator();
 
  private:
   boost::timer m_BoostTimer;
