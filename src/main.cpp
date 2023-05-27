@@ -4,6 +4,7 @@
 #include <boost/version.hpp>
 
 #include "boosttestwin.h"
+#include "smartptr.h"
 #include "timedate.h"
 
 int main(int argc, char *argv[]) {
@@ -37,7 +38,29 @@ int main(int argc, char *argv[]) {
   //  timeDate.TimePrecision();
   //  timeDate.TimePoint();
   //  timeDate.TimePeriod();
-  timeDate.TimeIterator();
+  //  timeDate.TimeIterator();
+  // work_time类使用
+  //  work_time wt;
+  //  wt.greeting(boost::posix_time::second_clock::local_time());
+  //  timeDate.TimeFormat();
+  //  timeDate.TimeLocal();
+
+  // 智能指针测试
+  SmartPtr smtPtr;
+  //  smtPtr.CreateScopedPtr();
+  // 错误：scoped_ptr未定义递增操作符
+  //  smtPtr++;
+  // 错误：scoped_ptr未定义递减操作符
+  //  std::prev(smtPtr);
+  // 错误：SmartPtr类持有scoped_ptr的成员变量，因此无法被拷贝或赋值，以下两行均无法编译成功
+  //  SmartPtr smtPtr1(smtPtr);
+  //  SmartPtr smtPtr2 = smtPtr;
+  //  smtPtr.CreateUniquePtr();
+  //  smtPtr.MakeUnique();
+  //  smtPtr.SharedPtrUsage();
+  //  smtPtr.SharedPtrUsage1();
+  //  smtPtr.MakeShare();
+  smtPtr.SharedPtrContainer();
   QApplication a(argc, argv);
   BoostTestWin w;
   w.show();

@@ -483,3 +483,57 @@ void TimeDate::TimeIterator() {
     std::cout << *t_iter << std::endl;
   }
 }
+
+void TimeDate::TimeFormat() {
+  boost::gregorian::date d(2023, 1, 22);
+  boost::gregorian::date_facet* dfacet =
+      new boost::gregorian::date_facet("%Y年 %m月 %d日");
+  std::cout.imbue(std::locale(std::cout.getloc(), dfacet));
+  std::cout << d << std::endl;
+
+  boost::posix_time::time_facet* tfacet =
+      new boost::posix_time::time_facet("%Y年 %m月 %d日 %H时 %M分 %S%F秒");
+  std::cout.imbue(std::locale(std::cout.getloc(), tfacet));
+  std::cout << boost::posix_time::ptime(d, boost::posix_time::hours(21) +
+                                               boost::posix_time::minutes(40) +
+                                               boost::posix_time::millisec(100))
+            << std::endl;
+}
+
+void TimeDate::TimeLocal() {
+  // 假设从北京飞往旧金山，飞行时间12小时，示范跨时区的时间转换代码
+  // 时区数据库对象
+  boost::local_time::tz_database tz_db;
+  // 假设文本数据库位于当前目录下
+  tz_db.load_from_file("./date_time_zonespec.csv");
+
+  // 使用字符串Asia/Shanghai获取上海时区，北京时间
+  boost::local_time::time_zone_ptr shz =
+      tz_db.time_zone_from_region("Asia/Shanghai");
+
+  // 使用字符串America/Los_angeles获得旧金山时区，即洛杉矶时区
+  boost::local_time::time_zone_ptr sfz =
+      tz_db.time_zone_from_region("America/Los_Angeles");
+
+  // 上海时区无夏令时
+  std::cout << shz->has_dst() << std::endl;
+  // 上海时区的名称是CST
+  std::cout << shz->std_zone_name() << std::endl;
+
+  // 北京时间2023-01-22，16点，上海时区，无夏令时
+  boost::local_time::local_date_time dt_bj(boost::gregorian::date(2023, 1, 22),
+                                           boost::posix_time::hours(16), shz,
+                                           false);
+  std::cout << dt_bj << std::endl;
+
+  // 飞行12小时
+  boost::posix_time::time_duration flight_time = boost::posix_time::hours(12);
+
+  // 到达旧金山时的北京时间
+  dt_bj += flight_time;
+  std::cout << dt_bj << std::endl;
+
+  // 旧金山当地时间
+  boost::local_time::local_date_time dt_sf = dt_bj.local_time_in(sfz);
+  std::cout << dt_sf << std::endl;
+}
