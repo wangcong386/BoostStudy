@@ -1,6 +1,18 @@
 #include "smartptr.h"
 
 #include <vector>
+
+// 内部类实现
+class sample ::impl {
+ public:
+  void print() { std::cout << "impl print" << std::endl; }
+};
+
+// 构造函数初始化 shared_ptr 成员变量
+sample::sample() : p(new impl) {}
+// 调用pimpl实现print()
+void sample::print() { p->print(); }
+
 SmartPtr::SmartPtr() {}
 
 void SmartPtr::CreateScopedPtr() {
@@ -101,4 +113,22 @@ void SmartPtr::SharedPtrContainer() {
   std::shared_ptr<int> p = v[9];
   *p = 100;
   std::cout << *v[9] << std::endl;
+}
+
+void SmartPtr::Pimpl() {
+  sample s;
+  s.print();
+}
+
+boost::shared_ptr<abstract> SmartPtr::FactoryCreate() {
+  // 工厂函数返回基类的shared_ptr
+  return boost::make_shared<impl>();
+}
+
+void SmartPtr::FactoryMode() {
+  // 工厂函数创建对象
+  auto p = FactoryCreate();
+  // 像普通指针一样使用
+  p->f();
+  p->g();
 }
