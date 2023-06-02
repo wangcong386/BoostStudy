@@ -63,6 +63,16 @@ class impl : public abstract {
   virtual void g() { std::cout << "class impl g" << std::endl; }
 };
 
+// 示范定制删除器/构造类
+class person {
+ public:
+  ~person() { std::cout << "person destruction func" << std::endl; }
+
+ private:
+  std::string m_strName;
+};
+// 示范定制删除器
+void DeletePerson(person* p);
 class SmartPtr {
  public:
   SmartPtr();
@@ -79,6 +89,8 @@ class SmartPtr {
   // 示范应用于工厂模式
   boost::shared_ptr<abstract> FactoryCreate();
   void FactoryMode();
+  // 示范定制删除器
+  void CustomizedDeleter();
 
  private:
   // 本类持有scoped_ptr的成员变量，因此无法被拷贝或赋值

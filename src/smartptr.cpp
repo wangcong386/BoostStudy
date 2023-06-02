@@ -2,6 +2,8 @@
 
 #include <vector>
 
+void DeletePerson(person* p) { std::cout << "delete p" << std::endl; }
+
 // 内部类实现
 class sample ::impl {
  public:
@@ -131,4 +133,9 @@ void SmartPtr::FactoryMode() {
   // 像普通指针一样使用
   p->f();
   p->g();
+}
+
+void SmartPtr::CustomizedDeleter() {
+  person* p = new person;
+  boost::shared_ptr<person> shared_p(p, DeletePerson);
 }
