@@ -2,6 +2,7 @@
 #define SMARTPTR_H
 #include <boost/smart_ptr.hpp>
 #include <boost/smart_ptr/make_unique.hpp>
+#include <boost/smart_ptr/make_shared.hpp>
 #include <boost/smart_ptr/scoped_ptr.hpp>
 #include <iostream>
 #include <string>
@@ -9,19 +10,21 @@
 // 一个拥有shared_ptr的类
 class Share {
  private:
-  std::shared_ptr<int> p;
+   boost::shared_ptr<int> p;
 
  public:
-  // 构造函数初始化shared_ptr
-  Share(std::shared_ptr<int> p_) : p(p_) {}
-  // 输出shared_ptr的引用计数和指向的值
-  void print() {
-    std::cout << "count:" << p.use_count() << " v=" << *p << std::endl;
-  }
+   // 构造函数初始化shared_ptr
+   Share(boost::shared_ptr<int> p_) : p(p_) {}
+   // 输出shared_ptr的引用计数和指向的值
+   void print()
+   {
+     std::cout << "count:" << p.use_count() << " v=" << *p << std::endl;
+   }
 };
 // 使用shared_ptr作为函数参数同样输出引用计数和指向的值
-inline void print_sharedptr_func(std::shared_ptr<int> p) {
-  std::cout << "count:" << p.use_count() << " v=" << *p << std::endl;
+inline void print_sharedptr_func(boost::shared_ptr<int> p)
+{
+   std::cout << "count:" << p.use_count() << " v=" << *p << std::endl;
 }
 
 // 示范应用于桥接模式
@@ -91,8 +94,14 @@ class SmartPtr {
   void FactoryMode();
   // 示范定制删除器
   void CustomizedDeleter();
+  // 示范显式bool转型
+  bool BoolTest();
+  // 示范指针转型函数
+  void Cast();
+  // 示范shared_ptr<void>
+  void SharedPtrVoid();
 
- private:
+private:
   // 本类持有scoped_ptr的成员变量，因此无法被拷贝或赋值
   boost::scoped_ptr<int> m_scpPtr;
 };

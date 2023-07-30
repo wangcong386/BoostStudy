@@ -56,11 +56,11 @@ void SmartPtr::MakeUnique() {
 
 void SmartPtr::SharedPtrUsage() {
   // 一个指向整数的shared_ptr
-  std::shared_ptr<int> sp(new int(10));
+  boost::shared_ptr<int> sp(new int(10));
   // 当前shared_ptr是指针的唯一持有者
   assert(sp.unique());
   // 第二个shared_ptr，拷贝构造函数
-  std::shared_ptr<int> sp1(sp);
+  boost::shared_ptr<int> sp1(sp);
   // 两个shared_ptr相等
   assert(sp == sp1);
   // 指向同一个对象，引用计数为2
@@ -76,7 +76,7 @@ void SmartPtr::SharedPtrUsage() {
 
 void SmartPtr::SharedPtrUsage1() {
   // shared_ptr持有整数指针
-  std::shared_ptr<int> p(new int(100));
+  boost::shared_ptr<int> p(new int(100));
   // 构造两个自定义类
   Share s1(p), s2(p);
 
@@ -92,27 +92,27 @@ void SmartPtr::SharedPtrUsage1() {
 
 void SmartPtr::MakeShare() {
   // 创建string的共享指针
-  std::shared_ptr<std::string> sp1 = std::make_shared<std::string>(__func__);
+  boost::shared_ptr<std::string> sp1 = boost::make_shared<std::string>(__func__);
   // 创建vector的共享指针
-  std::shared_ptr<std::vector<int>> sp2 =
-      std::make_shared<std::vector<int>>(10, 2);
+  boost::shared_ptr<std::vector<int>> sp2 =
+      boost::make_shared<std::vector<int>>(10, 2);
   assert(sp2->size() == 10 && sp2->at(9) == 2);
 }
 
 void SmartPtr::SharedPtrContainer() {
   // 一个持有shared_ptr的标准容器类型
-  typedef std::vector<std::shared_ptr<int>> vs;
+  typedef std::vector<boost::shared_ptr<int>> vs;
   // 声明一个拥有10个元素的容器，元素被初始化为空指针
   vs v(10);
   int i = 0;
   for (auto pos = v.begin(); pos != v.end(); ++pos) {
     // 使用工厂函数赋值
-    *pos = std::make_shared<int>(++i);
+    *pos = boost::make_shared<int>(++i);
     // 输出值
     std::cout << *(*pos) << ", ";
     std::cout << std::endl;
   }
-  std::shared_ptr<int> p = v[9];
+  boost::shared_ptr<int> p = v[9];
   *p = 100;
   std::cout << *v[9] << std::endl;
 }
@@ -138,4 +138,34 @@ void SmartPtr::FactoryMode() {
 void SmartPtr::CustomizedDeleter() {
   person* p = new person;
   boost::shared_ptr<person> shared_p(p, DeletePerson);
+}
+
+bool SmartPtr::BoolTest()
+{
+  auto p = boost::make_shared<int>(776);
+  // assert可以隐式转换
+  assert(p);
+  // if判断可以隐式转换
+  if (p)
+  {
+    std::cout << "explict case" << std::endl;
+  }
+  // 返回值必须显式转换
+  return static_cast<bool>(p);
+}
+
+void SmartPtr::Cast()
+{
+  boost::shared_ptr<std::exception> sp1(new std::bad_exception);
+  auto sp2 = boost::dynamic_pointer_cast<std::bad_exception>(sp1);
+  auto sp3 = boost::static_pointer_cast<std::exception>(sp2);
+  assert(sp3 == sp1);
+}
+
+void SmartPtr::SharedPtrVoid()
+{
+  boost::shared_ptr<std::exception> sp1(new std::bad_exception);
+  boost::shared_ptr<void> sp2 = sp1;
+  boost::shared_ptr<std::exception> sp3 = boost::static_pointer_cast<std::exception>(sp2);
+  assert(sp3 == sp1);
 }

@@ -63,7 +63,10 @@ int main(int argc, char *argv[]) {
   // smtPtr.SharedPtrContainer();
   // smtPtr.Pimpl();
   // smtPtr.FactoryMode();
-  smtPtr.CustomizedDeleter();
+  // smtPtr.CustomizedDeleter();
+  // smtPtr.BoolTest();
+  // smtPtr.Cast();
+  smtPtr.SharedPtrVoid();
   QApplication a(argc, argv);
   BoostTestWin w;
   w.show();
